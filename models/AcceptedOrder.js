@@ -1,6 +1,14 @@
 import mongoose from "mongoose";
 
 const acceptedOrderSchema = new mongoose.Schema({
+  // --- ADD THIS FIELD ---
+  orderId: { 
+    type: String, 
+    required: true, 
+    unique: true // This matches the index in your database
+  },
+  // -----------------------
+
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   items: [
     {
@@ -14,8 +22,8 @@ const acceptedOrderSchema = new mongoose.Schema({
   totalPrice: { type: Number, required: true },
   restaurantId: { type: String, required: true },
   orderDate: { type: Date, default: Date.now },
-  rest : { type: String},
-  status: { type: String, default: "active"},
+  rest: { type: String },
+  status: { type: String, default: "active" },
 });
 
 const AcceptedOrder =
