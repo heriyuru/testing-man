@@ -9,6 +9,9 @@ export default function OrdersList() {
   const [loading, setLoading] = useState(true);
   const [audioEnabled, setAudioEnabled] = useState(false);
 
+  // --- NEW STATE FOR ACTIVE STATUS ---
+  const [isActive, setIsActive] = useState(true);
+
   const rest = typeof window !== "undefined" ? localStorage.getItem("restlocation") : null;
   const prevOrdersRef = useRef([]);
 
@@ -17,6 +20,12 @@ export default function OrdersList() {
     setAudioEnabled(true);
     const audio = new Audio('/noti.mp3');
     audio.play().catch(err => console.error("Audio play failed:", err));
+  };
+
+  // --- NEW TOGGLE FUNCTION ---
+  const toggleStatus = () => {
+    setIsActive(!isActive);
+    // You can also send this value to your database here if needed
   };
 
   useEffect(() => {
@@ -38,7 +47,7 @@ export default function OrdersList() {
           const prevIds = prevOrdersRef.current.map(o => o._id);
           const newIds = newOrders.map(o => o._id);
 
-          const isUpdated = newIds.some(id => !prevIds.includes(id)); // only new orders trigger audio
+          const isUpdated = newIds.some(id => !prevIds.includes(id)); 
 
           if (isUpdated && audioEnabled) {
             const audio = new Audio('/noti.mp3');
@@ -57,10 +66,10 @@ export default function OrdersList() {
       }
     };
 
-    fetchOrders(); // initial fetch
-    const interval = setInterval(fetchOrders, 3000); // polling
+    fetchOrders(); 
+    const interval = setInterval(fetchOrders, 3000); 
     return () => clearInterval(interval);
-  }, [audioEnabled]); // depends on audioEnabled
+  }, [audioEnabled]); 
 
   async function acceptOrder(orderId) {
     try {
@@ -82,9 +91,28 @@ export default function OrdersList() {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h2>🧾 Orders for Your Restaurant</h2>
-      <Link href="/AcceptedOrdersList">Accepted Orders</Link>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h2>🧾 Orders for Your Restaurant</h2>
 
+        {/* --- ACTIVE/OFF TOGGLE BUTTON --- */}
+        <button
+          onClick={toggleStatus}
+          style={{
+            padding: '10px 20px',
+            backgroundColor: isActive ? '#4CAF50' : '#000000', // Green if active, Black if off
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: 'bold'
+          }}
+        >
+          {isActive ? "🟢 ACTIVE" : "⚫ OFF"}
+        </button>
+      </div>
+
+      <Link href="/AcceptedOrdersList">Accepted Orders</Link>
+      <br /><br />
 
       {!audioEnabled && (
         <button
