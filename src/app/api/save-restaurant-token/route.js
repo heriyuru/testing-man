@@ -1,7 +1,7 @@
 // app/api/save-restaurant-token/route.js
 import { NextResponse } from "next/server";
 import connectionToDatabase from "../../../../lib/mongoose"; // your existing connection
-import Restaurant from "../models/Restaurant";
+import Restaurant from "../../../../models/Restaurant";
 
 export async function POST(request) {
   try {
