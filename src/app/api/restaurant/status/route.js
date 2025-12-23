@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import connectionToDatabase from '@/lib/mongoose'; // Make sure this path to your mongoose.js is correct
-import Restaurant from '@/models/Restaurant'; // Make sure this path to your model is correct
+import connectionToDatabase from '../../../../../lib/mongoose'; // Make sure this path to your mongoose.js is correct
+import Restaurant from '../../../../../models/Restaurant'; // Make sure this path to your model is correct
 
 // 1. GET: This is called by the Customer Page to see which restaurants are open
 export async function GET() {
