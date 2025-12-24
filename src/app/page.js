@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -10,29 +10,28 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const saveFCMToken = useCallback(async (restaurantId) => {
-    if (typeof window === "undefined") return;
-
+  const saveFCMToken = async (restaurantId) => {
     try {
-      // Dynamic import Firebase
-      const { initializeApp } = await import("firebase/app");
-      const { getMessaging, getToken } = await import("firebase/messaging");
+      const { initializeApp } = await import('firebase/app');
+      const { getMessaging, getToken } = await import('firebase/messaging');
 
       const firebaseConfig = {
-        apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-        authDomain: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID + ".firebaseapp.com",
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID + ".appspot.com",
-        messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-        appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
+        apiKey: "AIzaSyDZ2uueufL3iXjyY2q-p1YT4III3xsZfgY",
+        authDomain: "realdel-f964c.firebaseapp.com",
+        projectId: "realdel-f964c",
+        storageBucket: "realdel-f964c.firebasestorage.app",
+        messagingSenderId: "118715949536",
+        appId: "1:118715949536:web:9d37749a6c6e2346548b85"
       };
 
       const app = initializeApp(firebaseConfig);
       const messaging = getMessaging(app);
+
+      const serviceWorkerRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
       
-      // Request permission and get token
       const token = await getToken(messaging, {
-        vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
+        vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY,
+        serviceWorkerRegistration: serviceWorkerRegistration
       });
 
       if (token) {
@@ -47,16 +46,15 @@ export default function Home() {
         console.log("✅ FCM token saved for restaurant", restaurantId);
       }
     } catch (error) {
-      console.error("❌ FCM error (login continues):", error);
+      console.error("❌ FCM failed:", error);
     }
-  }, []);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     let restaurantId, restLocation;
-
     if (email === "kushas" && password === "1234") {
       restaurantId = "1";
       restLocation = "https://maps.app.goo.gl/EaQzfEaVe1r1c6s18";
@@ -70,13 +68,11 @@ export default function Home() {
       localStorage.setItem("restlocation", restLocation);
       setRestId(restaurantId);
 
-      // Save FCM token (non-blocking)
-      saveFCMToken(restaurantId);
+      await saveFCMToken(restaurantId);
 
       alert("✅ Login successful! Restaurant ID: " + restaurantId);
       router.push("/orders");
     }
-
     setLoading(false);
   };
 
@@ -90,14 +86,7 @@ export default function Home() {
             type="text"
             value={email}
             onChange={e => setEmail(e.target.value)}
-            style={{ 
-              display: 'block', 
-              margin: '8px 0', 
-              padding: '12px', 
-              width: '100%', 
-              border: '1px solid #ddd',
-              borderRadius: '4px'
-            }}
+            style={{ display: 'block', margin: '8px 0', padding: '12px', width: '100%', border: '1px solid #ddd', borderRadius: '4px' }}
             required
           />
         </div>
@@ -107,14 +96,7 @@ export default function Home() {
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            style={{ 
-              display: 'block', 
-              margin: '8px 0', 
-              padding: '12px', 
-              width: '100%', 
-              border: '1px solid #ddd',
-              borderRadius: '4px'
-            }}
+            style={{ display: 'block', margin: '8px 0', padding: '12px', width: '100%', border: '1px solid #ddd', borderRadius: '4px' }}
             required
           />
         </div>
@@ -124,7 +106,7 @@ export default function Home() {
           style={{
             width: '100%',
             padding: '12px',
-            background: '#0070f3',
+            background: loading ? '#ccc' : '#0070f3',
             color: 'white',
             border: 'none',
             borderRadius: '4px',

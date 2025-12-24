@@ -1,20 +1,16 @@
-// app/api/save-restaurant-token/route.js
 import { NextResponse } from "next/server";
-import connectionToDatabase from "../../../../lib/mongoose"; // your existing connection
+import connectionToDatabase from "../../../../lib/mongoose";
 import Restaurant from "../../../../models/Restaurant";
 
 export async function POST(request) {
   try {
-    await connectionToDatabase(); // ✅ FIXED: removed "Connect()"
+    await connectionToDatabase();
     
     const { restaurantId, fcmToken } = await request.json();
     
     await Restaurant.findOneAndUpdate(
       { restaurantId },
-      { 
-        fcmToken, 
-        lastSeen: new Date() 
-      },
+      { fcmToken, lastSeen: new Date() },
       { upsert: true }
     );
     
